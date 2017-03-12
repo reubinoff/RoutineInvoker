@@ -8,9 +8,8 @@ matrix:
     - os: linux
       dist: trusty
       python: "2.7"
-    - os: osx
-      env: FORMULA="python"
-      language: generic
-    - os: osx
-      env: FORMULA="python3"
-      language: generic
+addons:
+  apt:
+    packages:
+      - python-commandnotfound
+      - python3-commandnotfound
