@@ -9,7 +9,7 @@
                     "enable": true
                 },
                 "steps": [{
-                        "name": "get_cm",
+                        "name": "get_repo",
                         "flow": {
                             "loop": 2
                         }
@@ -40,8 +40,8 @@
 
     ],
     "actions": [{
-            "name": "get_cm",
-            "description": "get cm number and info",
+            "name": "get_repo",
+            "description": "get repo number and info",
             "args": []
         },
         {
