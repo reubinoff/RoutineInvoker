@@ -1,0 +1,56 @@
+{
+    "test": {
+        "name": "first test",
+
+        "scenarios": [{
+                "name": "scenario A",
+                "flow": {
+                    "loop": 2,
+                    "enable": true
+                },
+                "steps": [{
+                        "name": "get_cm",
+                        "flow": {
+                            "loop": 2
+                        }
+                    },
+                    {
+                        "name": "wait",
+                        "args": {
+                            "time": 60
+                        }
+
+                    }
+                ]
+            },
+            {
+                "name": "scenario B",
+                "steps": [{
+                    "name": "wait",
+                    "args": {
+                        "time": 60
+                    }
+
+                }]
+            }
+        ]
+    },
+    "flow": [
+        { "loop": "how mant cycle to step" }
+
+    ],
+    "actions": [{
+            "name": "get_cm",
+            "description": "get cm number and info",
+            "args": []
+        },
+        {
+            "name": "wait",
+            "description": "sleep for x seconds",
+            "args": {
+                "time": "time in seconds"
+            }
+
+        }
+    ]
+}
