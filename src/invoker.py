@@ -7,7 +7,7 @@
         return -1
     test_flow.execute_test()
  '''
-
+import logging
 import json
 import inspect
 
@@ -27,11 +27,11 @@ class TestFlow(object):
         ''' invoke step '''
         action_name = step["name"]
         if action_name not in self.actions:
-            print "error >> handler not in actions"
+            logging.error("handler not in actions")
             return False
         handler = self.actions[action_name]
         args = self.__get_args_from_step(step)
-        print " running step {}".format(action_name)
+        logging.debug("Running step %s", action_name)
         return handler(*args.values())
 
     def __get_test_flow(self, case):
@@ -39,14 +39,12 @@ class TestFlow(object):
             "loop": 1,
             "enable": True
         }
-        flow_params = ["loop"]
+        flow_params = ["loop", "enable"]
+
         if "flow" not in case:
             return flow
 
-        raw_flow = case["flow"]
-
-        for param in [param for param in flow_params if param in raw_flow]:
-            flow[param] = raw_flow[param]
+        flow.update({k: v for k, v in case["flow"].iteritems() if k in flow_params})
 
         return flow
 
@@ -58,33 +56,32 @@ class TestFlow(object):
             name = scenario["name"]
             steps = scenario["steps"]
             for step in steps:
-                print "checking step {}".format(step["name"])
+                logging.debug("checking step %s", step["name"])
                 args = self.__get_args_from_step(step)
                 step_name = step["name"]
+                if step_name not in self.actions:
+                    logging.error("method %s not exists in the actions dictionary from constructor", step_name)
                 method = self.actions[step_name]
                 if method:
                     num_of_args = len(inspect.getargspec(method)[0])
 
                 if num_of_args != len(args):
-                    print "invalid args for the method: {} in scenario: {}".format(step_name, name)
-                    print "total args = {}".format(len(args))
-                    print "expected args = {}".format(num_of_args)
+                    logging.error("invalid args for the method: %s in scenario: %s", step_name, name)
+                    logging.error("total args = %s", len(args))
+                    logging.error("expected args = %s",num_of_args)
                     return False
 
         return True
 
     def __get_args_from_step(self, step):
-        if "args" in step:
-            args = step["args"]
-        else:
-            args = {}
-        return args
+        args = step.get("args")
+        return args if args else {}
 
     def execute_test(self):
         ''' Start test routine '''
         test = self.test
         name = test["name"]
-        print "Running test {}".format(name)
+        logging.info("Running test %s", name)
         if "scenarios" in test:
             scenarios = test["scenarios"]
             for scenario in scenarios:
@@ -98,8 +95,7 @@ class TestFlow(object):
             return
         for i in range(0, iterations):
             name = scenario["name"]
-            print "Running scenario {} iterations number {} out of {}".format(name,
-                                                                              i + 1, iterations)
+            logging.info("Running scenario %s iterations number %s out of %s", name, i + 1, iterations)
             if "steps" not in scenario:
                 continue
             steps = scenario["steps"]
@@ -111,5 +107,5 @@ class TestFlow(object):
         iterations = flow['loop']
         for i in range(0, iterations):
             name = step["name"]
-            print "Running step {} iteration number {} out of {}".format(name, i + 1, iterations)
+            logging.info("Running step %s iteration number %s out of %s", name, i + 1, iterations)
             self.__dispatch(step)
